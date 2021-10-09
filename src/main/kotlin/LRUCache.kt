@@ -1,11 +1,10 @@
-import java.util.*
 import kotlin.collections.HashMap
 
 abstract class LRUCache<K, V>(private val capacity: Int) {
 
     protected var size = 0
-    protected val map = HashMap<K, V>()
-    protected val keyList = LinkedList<K>()
+    protected val map = HashMap<K, Node<K, V>>()
+    protected val doublyLinkedList = DoublyLinkedList<K, V>()
 
     fun put(key: K, value: V) {
         val sizeBeforeOp = size
@@ -34,18 +33,21 @@ abstract class LRUCache<K, V>(private val capacity: Int) {
             "LRUCache is in inconsistent state."
         }
         getOrPutValue?.let {
-            assert(keyList.first == it) {
+            assert(doublyLinkedList.first.value == it) {
                 "Get or put value is not most recent."
             }
         }
     }
 
     private fun mapKeysAndKeyListAreSame(): Boolean {
-        if (map.size != keyList.size) return false
+        val listKeys = doublyLinkedList.map { it.key }
 
-        return map.keys.containsAll(keyList) && keyList.containsAll(map.keys)
+        if (listKeys.size != map.keys.size) return false
+
+        return map.keys.containsAll(doublyLinkedList.map { it.key })
+                && doublyLinkedList.map { it.key }.containsAll(map.keys)
     }
 
-    abstract fun doPut(key: K, value: V)
-    abstract fun doGet(key: K): V?
+    protected abstract fun doPut(key: K, value: V)
+    protected abstract fun doGet(key: K): V?
 }
