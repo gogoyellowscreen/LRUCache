@@ -2,7 +2,8 @@ import kotlin.collections.HashMap
 
 abstract class LRUCache<K, V>(private val capacity: Int) {
 
-    protected var size = 0
+    var size = 0
+        protected set
     protected val map = HashMap<K, Node<K, V>>()
     protected val doublyLinkedList = DoublyLinkedList<K, V>()
 
@@ -26,7 +27,7 @@ abstract class LRUCache<K, V>(private val capacity: Int) {
     }
 
     private fun runCommonAsserts(getOrPutValue: V?) {
-        assert(size in 0 until capacity) {
+        assert(size in 0 ..capacity) {
             "Invalid size."
         }
         assert(mapKeysAndKeyListAreSame()) {
